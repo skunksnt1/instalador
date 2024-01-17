@@ -13,13 +13,13 @@ done
 PROJECT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 # required imports
-source "${PROJECT_ROOT}/variables/manifest.sh"
-source "${PROJECT_ROOT}/utils/manifest.sh"
-source "${PROJECT_ROOT}/lib/manifest.sh"
+source "${PROJECT_ROOT}"/variables/manifest.sh
+source "${PROJECT_ROOT}"/utils/manifest.sh
+source "${PROJECT_ROOT}"/lib/manifest.sh
 
 # user configs file
-if [[ ! -e "${PROJECT_ROOT}/config" ]]; then
-  cat << EOF > "${PROJECT_ROOT}/config"
+if [[ ! -e "${PROJECT_ROOT}"/config ]]; then
+  cat << EOF > "${PROJECT_ROOT}"/config
 deploy_password=${deploy_password}
 mysql_root_password=${mysql_root_password}
 db_pass=${db_pass}
@@ -28,21 +28,26 @@ fi
 
 # this file has passwords
 sudo su - root <<EOF
-chown root:root "${PROJECT_ROOT}/config"
-chmod 700 "${PROJECT_ROOT}/config"
+chown root:root "${PROJECT_ROOT}"/config
+chmod 700 "${PROJECT_ROOT}"/config
 EOF
-source "${PROJECT_ROOT}/config"
+source "${PROJECT_ROOT}"/config
 
 # interactive CLI
 inquiry_options
 
 # dependencies related
-yum update -y
-yum install -y epel-release
-yum install -y git nodejs npm docker-ce docker-ce-cli containerd.io puppeteer snapd nginx certbot
+system_update
+system_node_install
+system_pm2_install
+system_docker_install
+system_puppeteer_dependencies
+system_snapd_install
+system_nginx_install
+system_certbot_install
 
 # system config
-system_create_user_centos
+system_create_user
 
 # backend related
 system_git_clone
